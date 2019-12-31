@@ -64,9 +64,11 @@ function purchase(item, purchaseQuantity){
         if(err) throw err;
         if(res[0].stock_quantity >= purchaseQuantity){
             let newQuantity = res[0].stock_quantity - purchaseQuantity;
+            let newSales = parseFloat(res[0].product_sales) + (parseFloat(res[0].price) * purchaseQuantity);
             connection.query(`UPDATE products SET ? WHERE ?`,[
                 {
-                    stock_quantity: newQuantity
+                    stock_quantity: newQuantity,
+                    product_sales: newSales.toFixed(2)
                 },
                 {
                     item_id: item
