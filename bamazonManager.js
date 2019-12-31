@@ -63,3 +63,47 @@ function viewLow(){
         init();        
     });
 }
+
+function addInventory(){
+    connection.query(`SELECT * FROM products`, (err, res) => {
+       inquirer.prompt([
+           {
+               message: "Which product would you like to add inventory to?",
+               name: 'addProduct',
+               type: 'list',
+               choices: function(){
+                   let choicesArr = [];
+                   res.forEach(product => {
+                       choicesArr.push(`${product.item_id}: ${product.product_name} - ${product.stock_quantity}`)
+                   });
+                   return choicesArr;
+               }
+           },
+           {
+               message: "How many would you like to order?",
+               name: "quantity",
+               type: 'input',
+               validate: function(value){
+                   if(!isNaN(value)){
+                       return true;
+                   }else{
+                       return false;
+                   }
+               }
+           }
+       ]).then(answers => {
+           totalQuantity = parseInt(answers.addProduct.substr(answers.addProduct.indexOf('- ') + 1)) + parseInt(answers.quantity);
+           connection.query(`UPDATE products SET stock_quantity = ${totalQuantity} WHERE item_id = ${answers.addProduct.substr(0, answers.addProduct.indexOf(':'))}`, (err) => {
+               if(err) throw err;
+               console.log(`Inventory Updated Successfully\nNew Inventory: ${totalQuantity}`);
+               init();
+           });
+       }).catch(err => {
+           if(err) throw err;
+       });
+    });
+}
+
+function addProduct(){
+
+}
