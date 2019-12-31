@@ -18,7 +18,7 @@ function init(){
     connection.query("SELECT * FROM products", (err, res) => {
         if(err) throw err;
         res.forEach(product => {
-            console.log(`--------------------\nID: ${product.item_id}\nProduct: ${product.product_name}\nPrice: ${product.price}\n--------------------`)
+            console.log(`ID: ${product.item_id} || Product: ${product.product_name} || Price: ${product.price}\n--------------------`)
         });
     });
     promptPurchase();
@@ -59,6 +59,58 @@ function promptPurchase(){
     });
 }
 
-function purchase(item, quantity){
-    
+function purchase(item, purchaseQuantity){
+    connection.query(`SELECT * FROM products WHERE item_id = ${item}`, (err, res) => {
+        if(err) throw err;
+        if(res[0].stock_quantity >= purchaseQuantity){
+            let newQuantity = res[0].stock_quantity - purchaseQuantity;
+            connection.query(`UPDATE products SET ? WHERE ?`,[
+                {
+                    stock_quantity: newQuantity
+                },
+                {
+                    item_id: item
+                }
+            ]);
+            console.log("Purchase Complete! Congratulations!");
+            inquirer.prompt([
+                {
+                    message: "Do you want to make another purchase?",
+                    name: "startOver",
+                    type: "confirm",
+                    default: true
+                }
+            ]).then(answers => {
+                switch(answers.startOver){
+                    case true:
+                        init();
+                        break;
+                    case false:
+                        connection.end();
+                }
+            }).catch(err => {
+                if(err) throw err;
+            });
+        }else{
+            console.log('Insufficient Quantity! No order can be made');
+            inquirer.prompt([
+                {
+                    message: "Do you want to try for another purchase?",
+                    name: "startOver",
+                    type: "confirm",
+                    default: true
+                }
+            ]).then(answers => {
+                switch(answers.startOver){
+                    case true:
+                        init();
+                        break;
+                    case false:
+                        connection.end();
+                }
+            }).catch(err => {
+                if(err) throw err;
+            });
+        }
+    });
 }
