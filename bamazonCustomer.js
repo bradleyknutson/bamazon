@@ -18,7 +18,7 @@ function init(){
     connection.query("SELECT * FROM products", (err, res) => {
         if(err) throw err;
         res.forEach(product => {
-            console.log(`ID: ${product.item_id} || Product: ${product.product_name} || Price: ${product.price}\n--------------------`)
+            console.log(`${product.item_id}: ${product.product_name} || Price: ${product.price}\n--------------------`)
         });
     });
     promptPurchase();

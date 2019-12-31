@@ -44,3 +44,22 @@ function init(){
         if(err) throw err;
     });
 }
+
+function viewProducts(){
+    connection.query(`SELECT * FROM products`, (err, res) => {
+        // console.log('\n');
+        res.forEach(product => {
+            console.log(`${product.item_id}: ${product.product_name} || Price: ${product.price} || Quantity: ${product.stock_quantity}\n--------------------------------------------`);
+        });
+        init();
+    });
+}
+
+function viewLow(){
+    connection.query(`SELECT * FROM products WHERE stock_quantity < 5`, (err, res) => {
+        res.forEach(product => {
+            console.log(`${product.item_id}: ${product.product_name} || Price: ${product.price} || Quantity: ${product.stock_quantity}\n--------------------------------------------`);
+        });
+        init();        
+    });
+}
