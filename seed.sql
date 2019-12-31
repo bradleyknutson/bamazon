@@ -20,3 +20,4 @@ VALUES("Books", 1000.00),
       ("Electronics", 10000.00),
       ("Home & Kitchen", 12000.00),
       ("Arts & Crafts", 6000.00);
+
