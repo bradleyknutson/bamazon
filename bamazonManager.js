@@ -84,7 +84,7 @@ function addInventory(){
                name: "quantity",
                type: 'input',
                validate: function(value){
-                   if(!isNaN(value)){
+                   if(value.isInteger()){
                        return true;
                    }else{
                        return false;
@@ -105,5 +105,71 @@ function addInventory(){
 }
 
 function addProduct(){
+    connection.query(`SELECT DISTINCT department_name FROM products`, (err, res) => {
+        if(err) throw err;
+        inquirer.prompt([
+            {
+                message: "What product would you like to add?",
+                name: "productName",
+                type: "input",
+                validate: function(value){
+                    if(value){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
+            },
+            {
+                message: "Which department does it belong to?",
+                name: "department",
+                type: 'list',
+                choices: function(){
+                    choicesArr = [];
+                    res.forEach(department => {
+                        choicesArr.push(department.department_name);
+                    });
+                    return choicesArr;
+                }
+            },
+            {
+                message: "How much does it cost?",
+                name: "price",
+                type: "input",
+                validate: function(value){
+                    if(!isNaN(value) && parseFloat(value).toFixed(2) == value){
+                        return true;
+                    }else{
+                        console.log('\nPlease try again, price must remain in correct format (99.99)');
+                        return false;
+                    }
+                }
+            },
+            {
+                message: "How much of the product is available?",
+                name: "quantity",
+                type: 'input',
+                validate: function(value){
+                    if(!isNaN(value) && parseInt(value) == value){
+                        return true;
+                    }else{
+                        console.log("Quantity must be a whole number");
+                        return false;
+                    }
+                }
+            }
+        ]).then(answers => {
+            connection.query(`INSERT INTO products(product_name, department_name, price, stock_quantity) VALUES('${answers.productName}', '${answers.department}', ${parseFloat(answers.price).toFixed(2)}, ${parseInt(answers.quantity)});`, (err, res) => {
+                if(err) throw err;
+                console.log('Product added successfully!');
+                init();              
+            });
+        }).catch(err => {
+            if(err) throw err;
+        });
+    });
 
 }
+
+
+
