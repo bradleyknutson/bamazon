@@ -35,7 +35,7 @@ function promptPurchase(){
                 choices: function(){
                     let choicesArr = [];
                     res.forEach(i => {
-                        choicesArr.push(`${i.item_id}: ${i.product_name}`);
+                        choicesArr.push(`${i.item_id}: ${i.product_name}`); 
                     });
                     return choicesArr;
                 }
