@@ -1,5 +1,8 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql');
+const {table} = require('table');
+
+const app = require('./app');
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -11,15 +14,16 @@ const connection = mysql.createConnection({
 
 connection.connect(err => {
     if(err) throw err;
-    init();
 });
 
 function init(){
     connection.query("SELECT * FROM products", (err, res) => {
         if(err) throw err;
+        let productArr = [['Item ID', "Product Name", "Price"]];
         res.forEach(product => {
-            console.log(`${product.item_id}: ${product.product_name} || Price: ${product.price}\n--------------------`)
+            productArr.push([product.item_id, product.product_name, product.price]);
         });
+        console.log(table(productArr));
     });
     promptPurchase();
 }
@@ -35,7 +39,7 @@ function promptPurchase(){
                 choices: function(){
                     let choicesArr = [];
                     res.forEach(i => {
-                        choicesArr.push(`${i.item_id}: ${i.product_name}`); 
+                        choicesArr.push(`${i.item_id}: ${i.product_name}`);
                     });
                     return choicesArr;
                 }
@@ -88,7 +92,8 @@ function purchase(item, purchaseQuantity){
                         init();
                         break;
                     case false:
-                        connection.end();
+                        app.init();
+                        break;
                 }
             }).catch(err => {
                 if(err) throw err;
@@ -108,11 +113,17 @@ function purchase(item, purchaseQuantity){
                         init();
                         break;
                     case false:
-                        connection.end();
+                        app.init();
+                        break;
                 }
             }).catch(err => {
                 if(err) throw err;
             });
         }
     });
+}
+
+module.exports = {
+    init: init,
+    connection: connection
 }
