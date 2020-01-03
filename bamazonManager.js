@@ -1,5 +1,8 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql');
+const {table} = require('table');
+const app = require('./app');
+
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -11,7 +14,6 @@ const connection = mysql.createConnection({
 
 connection.connect(err => {
     if(err) throw err;
-    init();
 });
 
 function init(){
@@ -37,7 +39,7 @@ function init(){
                 addProduct();
                 break;
             case "Quit":
-                connection.end();
+                app.init();
                 break;
         }
     }).catch(err => {
@@ -47,19 +49,22 @@ function init(){
 
 function viewProducts(){
     connection.query(`SELECT * FROM products`, (err, res) => {
-        // console.log('\n');
+        let products = [['Item ID', 'Product Name', 'Price', 'Quantity in Stock']];
         res.forEach(product => {
-            console.log(`${product.item_id}: ${product.product_name} || Price: ${product.price} || Quantity: ${product.stock_quantity}\n--------------------------------------------`);
+            products.push([product.item_id, product.product_name, product.price, product.stock_quantity]);
         });
+        console.log(table(products));
         init();
     });
 }
 
 function viewLow(){
     connection.query(`SELECT * FROM products WHERE stock_quantity < 5`, (err, res) => {
+        let products = [['Item ID', 'Product Name', 'Price', 'Quantity in Stock']];
         res.forEach(product => {
-            console.log(`${product.item_id}: ${product.product_name} || Price: ${product.price} || Quantity: ${product.stock_quantity}\n--------------------------------------------`);
+            products.push([product.item_id, product.product_name, product.price, product.stock_quantity]);
         });
+        console.log(table(products));
         init();        
     });
 }
@@ -84,12 +89,13 @@ function addInventory(){
                name: "quantity",
                type: 'input',
                validate: function(value){
-                   if(value.isInteger()){
-                       return true;
-                   }else{
-                       return false;
-                   }
-               }
+                    if(!isNaN(value) && parseInt(value) == value && value != 0){
+                        return true;
+                    }else{
+                        console.log("Quantity must be a whole, positive number");
+                        return false;
+                    }
+                }
            }
        ]).then(answers => {
            totalQuantity = parseInt(answers.addProduct.substr(answers.addProduct.indexOf('- ') + 1)) + parseInt(answers.quantity);
@@ -105,7 +111,7 @@ function addInventory(){
 }
 
 function addProduct(){
-    connection.query(`SELECT DISTINCT department_name FROM products`, (err, res) => {
+    connection.query(`SELECT * FROM departments`, (err, res) => {
         if(err) throw err;
         inquirer.prompt([
             {
@@ -159,7 +165,7 @@ function addProduct(){
                 }
             }
         ]).then(answers => {
-            connection.query(`INSERT INTO products(product_name, department_name, price, stock_quantity) VALUES('${answers.productName}', '${answers.department}', ${parseFloat(answers.price).toFixed(2)}, ${parseInt(answers.quantity)});`, (err, res) => {
+            connection.query(`INSERT INTO products(product_name, department_name, price, stock_quantity, product_sales) VALUES('${answers.productName}', '${answers.department}', ${parseFloat(answers.price).toFixed(2)}, ${parseInt(answers.quantity)}, 0);`, (err, res) => {
                 if(err) throw err;
                 console.log('Product added successfully!');
                 init();              
@@ -171,5 +177,7 @@ function addProduct(){
 
 }
 
-
-
+module.exports = {
+    init: init,
+    connection: connection
+}

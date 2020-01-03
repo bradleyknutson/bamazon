@@ -2,6 +2,8 @@ const inquirer = require('inquirer');
 const mysql = require('mysql');
 const {table} = require('table');
 
+const app = require('./app');
+
 const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -12,7 +14,6 @@ const connection = mysql.createConnection({
 
 connection.connect(err => {
     if(err) throw err;
-    init();
 });
 
 function init(){
@@ -32,7 +33,7 @@ function init(){
                 newDepartment();
                 break;
             case "Quit":
-                connection.end();
+                app.init();
                 break;
         }
     }).catch(err => {
@@ -104,3 +105,7 @@ function newDepartment(){
     });
 }
 
+module.exports = {
+    init: init,
+    connection: connection
+}
