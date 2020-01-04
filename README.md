@@ -37,3 +37,5 @@ Bamazon is a command line store where you can purchase many goods and services. 
 
 
 ## Roadmap
+* Allow for easier purchasing of items when product list is long, as opposed to endless scrolling.
+* Allow for updating the price of items and/or sales.
