@@ -1,4 +1,4 @@
-# bamazon
+# Bamazon
 
 ## Description
 Bamazon is a command line store where you can purchase many goods and services.  This app includes views for customer, in order to see and purchase products, manager, which allows you to manage inventory, and supervisor which allows you to manage departments and see total sales.
