@@ -143,7 +143,7 @@ function addProduct(){
                 name: "price",
                 type: "input",
                 validate: function(value){
-                    if(!isNaN(value) && parseFloat(value).toFixed(2) == value){
+                    if(!isNaN(value) && parseFloat(value).toFixed(2) == value && parseFloat(value) >= 0){
                         return true;
                     }else{
                         console.log('\nPlease try again, price must remain in correct format (99.99)');
@@ -156,7 +156,7 @@ function addProduct(){
                 name: "quantity",
                 type: 'input',
                 validate: function(value){
-                    if(!isNaN(value) && parseInt(value) == value){
+                    if(!isNaN(value) && parseInt(value) == value && parseInt(value) >=0){
                         return true;
                     }else{
                         console.log("Quantity must be a whole number");
