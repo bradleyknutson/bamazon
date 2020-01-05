@@ -27,7 +27,7 @@ Bamazon is a command line store where you can purchase many goods and services. 
 * * Creating a new department for products to be assigned to.
 
 ## Demo
-[Demo Video Here](  )
+[Demo Video Here](https://drive.google.com/file/d/1wxM8ejuBCkH2sSGgTKouZTE8DqshF33R/view)
 
 ## Frameworks Used
 * ### npm
